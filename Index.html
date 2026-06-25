@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOMS SRS v1.0 — Atreya SoftTech</title>
+<style>
+  :root {
+    --navy: #1A3C6B;
+    --blue: #2E75B6;
+    --light-bg: #EBF3FB;
+    --mid-bg: #F5F9FD;
+    --border: #C5D8EF;
+    --text: #1A1A2E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 14px; color: var(--text); background: #f0f4f8; }
+
+  /* LAYOUT */
+  .page { max-width: 900px; margin: 0 auto; background: white; box-shadow: 0 2px 20px rgba(0,0,0,0.12); }
+
+  /* HEADER BAR */
+  .doc-header { background: var(--navy); color: white; padding: 20px 24px; }
+  .doc-header .company { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+  .doc-header .location { font-size: 12px; color: #C8D8F0; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 2px 0; line-height: 2; }
+  .doc-header .location span { white-space: nowrap; margin-right: 6px; }
+
+  /* COVER */
+  .cover { padding: 60px 40px 40px; border-bottom: 3px solid var(--border); }
+  .cover h1 { font-size: 28px; font-weight: 900; color: var(--navy); text-align: center; letter-spacing: 1px; margin-bottom: 10px; }
+  .cover .subtitle { font-size: 20px; color: var(--blue); text-align: center; margin-bottom: 6px; }
+  .cover .version { font-size: 13px; color: #888; text-align: center; font-style: italic; margin-bottom: 40px; }
+  .meta-table { width: 560px; margin: 0 auto; border-collapse: collapse; }
+  .meta-table td { padding: 9px 14px; border: 1px solid var(--border); font-size: 13px; }
+  .meta-table td:first-child { font-weight: bold; color: var(--navy); background: var(--light-bg); width: 180px; }
+  .meta-table tr:nth-child(even) td:last-child { background: var(--mid-bg); }
+
+  /* CONTENT */
+  .content { padding: 0 40px 60px; }
+
+  /* TOC */
+  .toc { background: var(--light-bg); border-left: 4px solid var(--blue); padding: 24px 28px; margin: 32px 0; border-radius: 0 6px 6px 0; }
+  .toc h2 { color: var(--navy); font-size: 16px; margin-bottom: 14px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 5px 0; }
+  .toc a { color: var(--blue); text-decoration: none; font-size: 13px; }
+  .toc a:hover { text-decoration: underline; }
+  .toc .sub { padding-left: 20px; list-style-type: disc; }
+  .toc .sub li { margin: 3px 0; }
+
+  /* HEADINGS */
+  h1.section { font-size: 22px; color: var(--navy); margin: 40px 0 4px; padding-top: 32px; border-bottom: 3px solid var(--blue); padding-bottom: 8px; }
+  h2.sub { font-size: 17px; color: var(--blue); margin: 28px 0 10px; }
+  h3.subsub { font-size: 15px; color: var(--navy); margin: 20px 0 8px; font-weight: bold; }
+
+  /* PARAGRAPHS */
+  p { margin: 10px 0; line-height: 1.65; }
+  ul, ol { padding-left: 24px; margin: 8px 0 12px; }
+  li { margin: 4px 0; line-height: 1.6; }
+
+  /* TABLES */
+  .req-table { width: 100%; border-collapse: collapse; margin: 14px 0 24px; font-size: 13px; }
+  .req-table th { background: var(--navy); color: white; padding: 9px 12px; text-align: left; font-weight: bold; }
+  .req-table td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  .req-table tr:nth-child(even) td { background: var(--mid-bg); }
+  .req-table tr:hover td { background: #ddeeff44; }
+  .req-table .id { font-family: monospace; font-size: 12px; color: var(--navy); font-weight: bold; white-space: nowrap; }
+  .req-table .pri-high { color: #b71c1c; font-weight: bold; }
+  .req-table .pri-med { color: #e65100; font-weight: bold; }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+  .badge-high { background: #fdecea; color: #b71c1c; }
+  .badge-med  { background: #fff3e0; color: #e65100; }
+
+  /* STATE MACHINE */
+  .state-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+  .state { background: var(--light-bg); border: 2px solid var(--blue); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: bold; color: var(--navy); }
+  .arrow { color: var(--blue); font-size: 18px; font-weight: bold; }
+
+  /* FOOTER */
+  .doc-footer { background: var(--navy); color: #aac4e8; text-align: center; padding: 16px; font-size: 11px; }
+
+  /* PRINT */
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; }
+    h1.section { page-break-before: always; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .doc-header { padding: 18px 20px; }
+    .content { padding-left: 16px; padding-right: 16px; }
+    .cover { padding: 28px 16px 24px; }
+    .cover h1 { font-size: 20px; }
+    .meta-table { width: 100%; }
+    .req-table { font-size: 12px; }
+    .req-table th, .req-table td { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="company">ATREYA SOFTTECH</div>
+  <div class="location">
+    <span>Mysore, Karnataka · India</span>
+    <span>contact@atreyasofttech.in</span>
+    <span>+91 87925 07355</span>
+  </div>
+</div>
+
+<!-- COVER -->
+<div class="cover">
+  <h1>SOFTWARE REQUIREMENTS SPECIFICATION</h1>
+  <div class="subtitle">Sales Order Management System (SOMS)</div>
+  <div class="version">Document ID: AST-SOMS-SRS-001 &nbsp;·&nbsp; Version 1.0</div>
+  <table class="meta-table">
+    <tr><td>Document ID</td><td>AST-SOMS-SRS-001</td></tr>
+    <tr><td>Version</td><td>1.0 — Initial Release</td></tr>
+    <tr><td>Date</td><td>June 25, 2026</td></tr>
+    <tr><td>Prepared by</td><td>Atreya SoftTech — Engineering Team</td></tr>
+    <tr><td>Client</td><td>Atreya SoftTech Pvt. Ltd.</td></tr>
+    <tr><td>Status</td><td>Draft — Pending Client Approval</td></tr>
+    <tr><td>Confidentiality</td><td>Confidential — Internal Use Only</td></tr>
+  </table>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 Table of Contents</h2>
+  <ol>
+    <li><a href="#s1">Introduction</a></li>
+    <li><a href="#s2">Overall Description</a></li>
+    <li><a href="#s3">Specific Functional Requirements</a>
+      <ul class="sub">
+        <li><a href="#s31">FR-AUTH — Authentication</a></li>
+        <li><a href="#s32">FR-ORDER — Order Entry</a></li>
+        <li><a href="#s33">FR-MYORDERS — My Orders View</a></li>
+        <li><a href="#s34">FR-ADMIN — Admin Dashboard</a></li>
+        <li><a href="#s35">FR-PROD — Production Scheduling</a></li>
+        <li><a href="#s36">FR-COMPLETE — Order Completion</a></li>
+        <li><a href="#s37">FR-MGMT — Completed Order Management</a></li>
+      </ul>
+    </li>
+    <li><a href="#s4">Non-Functional Requirements</a></li>
+    <li><a href="#s7">User Interface Requirements</a></li>
+    <li><a href="#s9">Appendices</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h1 class="section" id="s1">1. Introduction</h1>
+
+<h2 class="sub">1.1 Purpose</h2>
+<p>This Software Requirements Specification (SRS) defines the complete functional and non-functional requirements for the <strong>Sales Order Management System (SOMS)</strong> developed by Atreya SoftTech Pvt. Ltd. The document serves as the authoritative reference for design, development, testing, and project acceptance.</p>
+<p>SOMS is a mobile-first web application that digitises and streamlines the field-sales order capture and production scheduling workflow. It replaces manual entry processes and provides real-time visibility from order creation through to delivery completion.</p>
+
+<h2 class="sub">1.2 Scope</h2>
+<p>The system covers the following functional domains:</p>
+<ul>
+  <li>Secure authentication via mobile number and 6-digit PIN</li>
+  <li>Role-based access control — two roles: <strong>Admin</strong> and <strong>Sales User</strong></li>
+  <li>Sales order entry, submission, and personal order tracking by Sales Users</li>
+  <li>Centralised order management dashboard for Admins (customer-wise and item-wise views)</li>
+  <li>Production queue management with batch-level report generation</li>
+  <li>Order completion workflow with vehicle and notes capture</li>
+  <li>Report generation, download, and order archival by Admin</li>
+</ul>
+<p><strong>Out of scope for v1.0:</strong> Inventory management, payment processing, ERP integration, third-party logistics connectivity.</p>
+
+<h2 class="sub">1.3 Definitions &amp; Abbreviations</h2>
+<table class="req-table">
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td class="id">SRS</td><td>Software Requirements Specification</td></tr>
+  <tr><td class="id">SOMS</td><td>Sales Order Management System</td></tr>
+  <tr><td class="id">Admin</td><td>Privileged user responsible for order oversight and production scheduling</td></tr>
+  <tr><td class="id">Sales User</td><td>Field sales representative who creates and completes orders</td></tr>
+  <tr><td class="id">Order</td><td>A submitted record of a customer purchase containing item code and quantity</td></tr>
+  <tr><td class="id">Production Batch</td><td>A logical group of orders for the same item code marked for production</td></tr>
+  <tr><td class="id">PIN</td><td>6-digit numeric Personal Identification Number used for authentication</td></tr>
+  <tr><td class="id">JWT</td><td>JSON Web Token used for session management</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h1 class="section" id="s2">2. Overall Description</h1>
+
+<h2 class="sub">2.1 Product Perspective</h2>
+<p>SOMS is a standalone, cloud-hosted web application accessible from any modern mobile browser without requiring a native app installation. It communicates with a RESTful API backend and a relational database, with extension points for future ERP and CRM integration.</p>
+
+<h2 class="sub">2.2 Product Functions — Summary</h2>
+<table class="req-table">
+  <tr><th>#</th><th>Function</th><th>Actor</th><th>Description</th></tr>
+  <tr><td class="id">F-01</td><td>Authentication</td><td>All Users</td><td>Login with mobile number + 6-digit PIN; role-based redirection</td></tr>
+  <tr><td class="id">F-02</td><td>Order Entry</td><td>Sales User</td><td>Create and submit sales orders with customer and item details</td></tr>
+  <tr><td class="id">F-03</td><td>My Orders View</td><td>Sales User</td><td>View personal order list; update completed orders with delivery info</td></tr>
+  <tr><td class="id">F-04</td><td>Admin Dashboard</td><td>Admin</td><td>View all orders in customer-wise and item-wise tabs</td></tr>
+  <tr><td class="id">F-05</td><td>Production Scheduling</td><td>Admin</td><td>Mark item-wise order groups as 'In Production'; generate batch reports</td></tr>
+  <tr><td class="id">F-06</td><td>Order Completion</td><td>Sales User</td><td>Mark own order complete; add vehicle details and notes</td></tr>
+  <tr><td class="id">F-07</td><td>Completed Order Mgmt</td><td>Admin</td><td>View completed orders; download reports; delete orders</td></tr>
+</table>
+
+<h2 class="sub">2.3 User Classes</h2>
+<h3 class="subsub">2.3.1 Sales User</h3>
+<p>Field sales representatives who interact with customers and record sales transactions. They are expected to be comfortable with smartphones. The UI prioritises simplicity and speed. Sales Users can only see and manage their <strong>own orders</strong>.</p>
+<h3 class="subsub">2.3.2 Administrator</h3>
+<p>Administrators manage the overall order lifecycle, coordinate production, and maintain data hygiene. They have <strong>full visibility</strong> across all Sales Users and all orders. All Admin accounts share identical privileges in v1.0.</p>
+
+<h2 class="sub">2.4 Operating Environment</h2>
+<ul>
+  <li>Primary: Mobile browser (Chrome/Safari on iOS 16+, Android 10+)</li>
+  <li>Secondary: Desktop browsers (Chrome 110+, Firefox 110+, Edge 110+)</li>
+  <li>Network: 4G/LTE or Wi-Fi; graceful degradation on 3G</li>
+  <li>Hosting: Cloud-hosted, containerised deployment (AWS/Azure)</li>
+</ul>
+
+<!-- ═══════════════════════════════════════ -->
+<h1 class="section" id="s3">3. Specific Functional Requirements</h1>
+
+<h2 class="sub" id="s31">3.1 Authentication — FR-AUTH</h2>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-AUTH-01</td><td>The system shall present a login screen as the default landing page for all unauthenticated sessions.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-02</td><td>The login screen shall contain a 10-digit mobile number input field and a 6-digit numeric PIN input field.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-03</td><td>The PIN field shall mask entered digits, displaying them as dots or asterisks.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-04</td><td>On successful authentication, the system shall issue a secure JWT session token with a configurable expiry (default 8 hours).</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-05</td><td>On authentication failure, the system shall display "Invalid mobile number or PIN" without indicating which field is incorrect (prevents enumeration attacks).</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-06</td><td>After 5 consecutive failed login attempts, the account shall be locked for 15 minutes.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-07</td><td>After successful login, Sales Users are redirected to Order Entry; Admins are redirected to the Admin Dashboard.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-08</td><td>A 'Logout' option shall be accessible from all authenticated screens.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-AUTH-09</td><td>Sessions shall be invalidated server-side on logout; the client token must be discarded.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-AUTH-10</td><td>The mobile number field shall accept only 10 numeric digits (no country code prefix).</td><td><span class="badge badge-med">Medium</span></td></tr>
+</table>
+
+<h2 class="sub" id="s32">3.2 Order Entry — FR-ORDER</h2>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-ORDER-01</td><td>Authenticated Sales Users shall be able to access an Order Entry form from their home screen.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ORDER-02</td><td>The Order Entry form shall contain the following mandatory fields: <strong>Customer Name</strong> (text), <strong>Customer Mobile Number</strong> (10-digit), <strong>Item Code</strong> (searchable), <strong>Quantity</strong> (positive integer).</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ORDER-03</td><td>All four fields shall be validated client-side and server-side before submission.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ORDER-04</td><td>The system shall automatically record the submitting Sales User's ID and the UTC timestamp — these fields are not editable.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ORDER-05</td><td>On successful submission, the system shall show a confirmation message and clear the form for the next entry.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-ORDER-06</td><td>A Sales User shall be able to submit multiple orders in the same session without logging out.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ORDER-07</td><td>Quantity must be a positive integer greater than zero. Zero or negative values shall be rejected with an inline validation message.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ORDER-08</td><td>Customer Mobile Number shall be validated as exactly 10 numeric digits.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-ORDER-09</td><td>The Item Code field shall be a searchable dropdown of pre-loaded valid item codes (not free text).</td><td><span class="badge badge-med">Medium</span></td></tr>
+</table>
+
+<h2 class="sub" id="s33">3.3 My Orders View — FR-MYORDERS</h2>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-MYORDERS-01</td><td>The system shall display a 'My Orders' screen showing <strong>only orders submitted by the currently logged-in Sales User</strong>.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MYORDERS-02</td><td>Orders shall be displayed in <strong>ascending chronological order (oldest first — first billed, first displayed)</strong> by default.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-MYORDERS-03</td><td>Each order row shall display: Customer Name, Item Code, Quantity, Submission Date/Time, and current Order Status.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MYORDERS-04</td><td>The view shall support filtering by Order Status (All / Pending / In Production / Completed).</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-MYORDERS-05</td><td>Completed orders shall be visually distinguished (e.g., greyed out or with a distinct badge).</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-MYORDERS-06</td><td>A Sales User shall not be able to edit or delete a submitted order. Only the completion workflow can modify it.</td><td><span class="badge badge-high">High</span></td></tr>
+</table>
+
+<h2 class="sub" id="s34">3.4 Admin Dashboard — FR-ADMIN</h2>
+<h3 class="subsub">3.4.1 Customer-Wise Tab</h3>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-ADMIN-01</td><td>The Customer-Wise tab shall group and display all active orders grouped by <strong>Customer Name</strong>.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ADMIN-02</td><td>Each customer group shall be collapsible/expandable to show or hide its individual orders.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-ADMIN-03</td><td>Each order entry shall display: Order ID, Customer Mobile, Item Code, Quantity, Sales User Name, Submission Date, and Order Status.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ADMIN-04</td><td>The tab shall support searching by Customer Name or Customer Mobile Number.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-ADMIN-05</td><td>Completed orders shall be included in the view with a 'Completed' status badge and filterable by status.</td><td><span class="badge badge-med">Medium</span></td></tr>
+</table>
+
+<h3 class="subsub">3.4.2 Item-Wise Tab</h3>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-ADMIN-06</td><td>The Item-Wise tab shall group and display all active orders grouped by <strong>Item Code</strong>.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ADMIN-07</td><td>Each item group shall display the <strong>total aggregated quantity</strong> for that Item Code across all included orders.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ADMIN-08</td><td>Each item group shall list individual orders with Customer Name, Quantity, Sales User, and Submission Date.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ADMIN-09</td><td>Each item group in 'Pending' state shall display a <strong>'Set to Production'</strong> button.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ADMIN-10</td><td>⚠️ When a new order arrives for an Item Code that already has an active production batch, the new order shall appear as a <strong>separate pending group</strong> and must NOT be merged into the existing in-production batch.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-ADMIN-11</td><td>The Item-Wise tab shall support filtering by Order Status (All / Pending / In Production / Completed).</td><td><span class="badge badge-med">Medium</span></td></tr>
+</table>
+
+<h2 class="sub" id="s35">3.5 Production Scheduling — FR-PROD</h2>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-PROD-01</td><td>An Admin shall be able to click 'Set to Production' on an item group to transition all included pending orders to <strong>'In Production'</strong> status as a single batch.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-PROD-02</td><td>The system shall require a confirmation prompt before transitioning orders to 'In Production' status.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-PROD-03</td><td>On confirming 'Set to Production', the system shall <strong>immediately generate a Production Batch Report</strong>.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-PROD-04</td><td>The Production Batch Report shall be downloadable as a PDF from within the application.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-PROD-05</td><td>The Production Batch Report shall contain: Report Date/Time, Batch ID, Item Code, Total Quantity, and a table of all orders in the batch (Order ID, Customer Name, Quantity, Sales User, Submission Date).</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-PROD-06</td><td>⚠️ Once an item group is moved to 'In Production', new orders for the same Item Code shall form a <strong>new separate pending group</strong> — they shall not be added to the existing production batch.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-PROD-07</td><td>The status change to 'In Production' shall be logged with the Admin User ID and the timestamp of the action.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-PROD-08</td><td>The 'Set to Production' action shall be <strong>irreversible</strong>; there is no 'Revert to Pending' function in v1.0.</td><td><span class="badge badge-high">High</span></td></tr>
+</table>
+
+<h2 class="sub" id="s36">3.6 Order Completion — FR-COMPLETE</h2>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-COMPLETE-01</td><td>A Sales User shall be able to mark one of their <strong>own orders</strong> as 'Completed' from the My Orders view.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-COMPLETE-02</td><td>The completion action shall open a form requiring: <strong>Vehicle Number</strong> (mandatory) and <strong>Notes</strong> (optional free-text).</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-COMPLETE-03</td><td>Vehicle Number shall be validated as non-empty before the completion form can be submitted.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-COMPLETE-04</td><td>On submitting the completion form, the order status shall change to 'Completed' and the completion timestamp shall be recorded.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-COMPLETE-05</td><td>A Sales User may only complete orders <strong>belonging to themselves</strong>; they cannot complete another Sales User's orders.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-COMPLETE-06</td><td>An order that has not been moved to 'In Production' can still be completed (e.g., immediate small orders).</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-COMPLETE-07</td><td>Once marked 'Completed', no further edits are possible by the Sales User.</td><td><span class="badge badge-high">High</span></td></tr>
+</table>
+
+<h2 class="sub" id="s37">3.7 Completed Order Management — FR-MGMT</h2>
+<table class="req-table">
+  <tr><th style="width:130px">Req ID</th><th>Requirement</th><th style="width:80px">Priority</th></tr>
+  <tr><td class="id">FR-MGMT-01</td><td>The Admin Dashboard shall include a 'Completed Orders' section to view all orders with status 'Completed'.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MGMT-02</td><td>Each completed order record shall display: Order ID, Customer Name, Customer Mobile, Item Code, Quantity, Sales User, Submission Date, Completion Date, Vehicle Number, and Notes.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MGMT-03</td><td>An Admin shall be able to <strong>download a Completed Order Report</strong> for selected orders in PDF format.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MGMT-04</td><td>The Completed Order Report shall include all fields from FR-MGMT-02 plus the Admin who downloaded the report and the download timestamp.</td><td><span class="badge badge-med">Medium</span></td></tr>
+  <tr><td class="id">FR-MGMT-05</td><td>An Admin shall be able to <strong>permanently delete</strong> a completed order record after downloading the report.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MGMT-06</td><td>The system shall display a confirmation dialog before any delete action, clearly stating it is permanent and irreversible.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MGMT-07</td><td>Deleted orders shall be <strong>soft-deleted</strong> in the database (flagged, not physically removed) to preserve an audit trail. They shall not appear in any UI view after deletion.</td><td><span class="badge badge-high">High</span></td></tr>
+  <tr><td class="id">FR-MGMT-08</td><td>An Admin shall be able to select multiple completed orders and delete them in bulk.</td><td><span class="badge badge-med">Medium</span></td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h1 class="section" id="s4">4. Non-Functional Requirements</h1>
+
+<h2 class="sub">4.1 Performance</h2>
+<table class="req-table">
+  <tr><th>NFR ID</th><th>Requirement</th><th>Target</th></tr>
+  <tr><td class="id">NFR-PERF-01</td><td>Page load time — initial navigation</td><td>≤ 2 seconds on 4G</td></tr>
+  <tr><td class="id">NFR-PERF-02</td><td>Order submission API response (95th percentile)</td><td>≤ 500 ms</td></tr>
+  <tr><td class="id">NFR-PERF-03</td><td>Admin dashboard load for up to 1,000 orders</td><td>≤ 3 seconds</td></tr>
+  <tr><td class="id">NFR-PERF-04</td><td>PDF report generation for up to 200 orders</td><td>≤ 5 seconds</td></tr>
+  <tr><td class="id">NFR-PERF-05</td><td>Concurrent authenticated users without degradation</td><td>≥ 50</td></tr>
+</table>
+
+<h2 class="sub">4.2 Security</h2>
+<table class="req-table">
+  <tr><th>NFR ID</th><th>Requirement</th></tr>
+  <tr><td class="id">NFR-SEC-01</td><td>All communications shall use HTTPS/TLS 1.2 or higher. Plain HTTP connections shall be rejected.</td></tr>
+  <tr><td class="id">NFR-SEC-02</td><td>PINs shall be hashed using <strong>bcrypt</strong> (minimum cost factor 12). PINs shall never be stored or transmitted in plaintext.</td></tr>
+  <tr><td class="id">NFR-SEC-03</td><td>JWTs shall be signed with a server-held secret (HS256 minimum) and expire after 8 hours.</td></tr>
+  <tr><td class="id">NFR-SEC-04</td><td>All user-supplied input shall be sanitised to prevent SQL injection and XSS. Parameterised queries shall be used for all database operations.</td></tr>
+  <tr><td class="id">NFR-SEC-05</td><td>Role-based authorisation checks shall be enforced <strong>server-side</strong> on every API endpoint.</td></tr>
+  <tr><td class="id">NFR-SEC-06</td><td>Account lockout (5 failed attempts → 15-minute lockout) shall be enforced server-side.</td></tr>
+  <tr><td class="id">NFR-SEC-07</td><td>No sensitive data (PINs, tokens, PII) shall appear in server logs, error messages, or URL query parameters.</td></tr>
+  <tr><td class="id">NFR-SEC-08</td><td>Soft-deleted order records shall not be retrievable via the application API.</td></tr>
+</table>
+
+<h2 class="sub">4.3 Usability</h2>
+<ul>
+  <li>Fully functional on screens from 360 px width upward (mobile-first responsive)</li>
+  <li>All interactive elements shall have a minimum tap target of 44 × 44 px (WCAG 2.1)</li>
+  <li>Form validation errors shall appear inline, adjacent to the offending field</li>
+  <li>The order entry form shall be completable in under 60 seconds by a trained Sales User</li>
+  <li>All status labels shall use plain language — no technical codes visible to end users</li>
+  <li>Loading indicators for all async operations taking longer than 300 ms</li>
+</ul>
+
+<h2 class="sub">4.4 Reliability &amp; Availability</h2>
+<table class="req-table">
+  <tr><th>NFR ID</th><th>Requirement</th><th>Target</th></tr>
+  <tr><td class="id">NFR-REL-01</td><td>System uptime (excluding planned maintenance)</td><td>≥ 99.5% monthly</td></tr>
+  <tr><td class="id">NFR-REL-02</td><td>Planned maintenance windows</td><td>Off-peak hours, 24h advance notice</td></tr>
+  <tr><td class="id">NFR-REL-03</td><td>Data backup frequency</td><td>Daily automated, retained 30 days</td></tr>
+  <tr><td class="id">NFR-REL-04</td><td>Recovery Point Objective (RPO)</td><td>≤ 24 hours</td></tr>
+  <tr><td class="id">NFR-REL-05</td><td>Recovery Time Objective (RTO)</td><td>≤ 4 hours</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════ -->
+<h1 class="section" id="s7">5. User Interface Requirements</h1>
+
+<h2 class="sub">5.1 Login Screen</h2>
+<ul>
+  <li>Fields: Mobile Number (numeric input) + PIN (masked numeric)</li>
+  <li>Primary action: full-width 'Login' button</li>
+  <li>Error state: inline error below the form on failure</li>
+  <li>Lockout state: disabled form with countdown timer showing minutes remaining</li>
+  <li>Branding: Atreya SoftTech logo and app name at top</li>
+</ul>
+
+<h2 class="sub">5.2 Sales User — Order Entry</h2>
+<ul>
+  <li>Bottom tab bar with 'New Order' (active) and 'My Orders'</li>
+  <li>Form field order: Customer Name → Customer Mobile → Item Code (searchable) → Quantity</li>
+  <li>Real-time inline validation on blur for each field</li>
+  <li>Submit button disabled until all fields are valid</li>
+  <li>Success: toast/snackbar with order reference ID; form resets automatically</li>
+</ul>
+
+<h2 class="sub">5.3 Sales User — My Orders</h2>
+<ul>
+  <li>Scrollable list of order cards, oldest first (first billed, first displayed)</li>
+  <li>Card content: Customer Name, Item Code, Quantity, Date, Status badge</li>
+  <li>Status badges: Pending (yellow) · In Production (blue) · Completed (green)</li>
+  <li>'Mark Complete' button visible only on Pending or In Production orders</li>
+  <li>Completion modal: Vehicle Number (required) + Notes (optional) + Confirm button</li>
+  <li>Filter chips: All / Pending / In Production / Completed</li>
+</ul>
+
+<h2 class="sub">5.4 Admin Dashboard</h2>
+<ul>
+  <li>Top tab bar: Customer Wise | Item Wise</li>
+  <li><strong>Customer Wise:</strong> Accordion groups by customer name; order count badge; expanded state shows order table</li>
+  <li><strong>Item Wise:</strong> Accordion groups by item code; total quantity badge; 'Set to Production' button on pending groups</li>
+  <li>'Set to Production' flow: Confirmation modal → success toast with batch ID → report download prompt</li>
+  <li>Search bar on both tabs</li>
+</ul>
+
+<h2 class="sub">5.5 Admin — Completed Orders</h2>
+<ul>
+  <li>Full-width table with all completed order fields</li>
+  <li>Row-level checkbox selection for bulk operations</li>
+  <li>Toolbar: 'Download Report' and 'Delete' buttons activate when 1+ rows selected</li>
+  <li>Delete confirmation modal: lists selected order IDs, warns action is permanent</li>
+  <li>Report download: triggers PDF generation and browser file download</li>
+</ul>
+
+<!-- ═══════════════════════════════════════ -->
+<h1 class="section" id="s9">6. Appendices</h1>
+
+<h2 class="sub">6.1 Order Status State Machine</h2>
+<div class="state-flow">
+  <div class="state">— New —</div>
+  <div class="arrow">→</div>
+  <div class="state">Pending</div>
+  <div class="arrow">→</div>
+  <div class="state">In Production</div>
+  <div class="arrow">→</div>
+  <div class="state">Completed</div>
+  <div class="arrow">→</div>
+  <div class="state">Deleted (soft)</div>
+</div>
+<p style="font-size:12px;color:#666;margin-top:4px">Note: Pending can also transition directly to Completed (bypassing In Production) for immediate deliveries.</p>
+
+<table class="req-table" style="margin-top:16px">
+  <tr><th>From Status</th><th>To Status</th><th>Trigger</th><th>Actor</th></tr>
+  <tr><td>— (new)</td><td>Pending</td><td>Order submitted via Order Entry form</td><td>Sales User</td></tr>
+  <tr><td>Pending</td><td>In Production</td><td>Admin clicks 'Set to Production'</td><td>Admin</td></tr>
+  <tr><td>Pending</td><td>Completed</td><td>Sales User marks complete (immediate delivery)</td><td>Sales User</td></tr>
+  <tr><td>In Production</td><td>Completed</td><td>Sales User marks complete after production</td><td>Sales User</td></tr>
+  <tr><td>Completed</td><td>Deleted (soft)</td><td>Admin deletes completed order</td><td>Admin</td></tr>
+</table>
+
+<h2 class="sub">6.2 Use Case Summary</h2>
+<table class="req-table">
+  <tr><th>UC ID</th><th>Name</th><th>Actor</th><th>Trigger</th></tr>
+  <tr><td class="id">UC-01</td><td>Login to SOMS</td><td>Any User</td><td>User opens application</td></tr>
+  <tr><td class="id">UC-02</td><td>Create Sales Order</td><td>Sales User</td><td>Customer places an order</td></tr>
+  <tr><td class="id">UC-03</td><td>View My Orders</td><td>Sales User</td><td>Sales User checks order status</td></tr>
+  <tr><td class="id">UC-04</td><td>Mark Order Complete</td><td>Sales User</td><td>Goods delivered; records delivery details</td></tr>
+  <tr><td class="id">UC-05</td><td>View Customer-Wise Dashboard</td><td>Admin</td><td>Admin reviews orders by customer</td></tr>
+  <tr><td class="id">UC-06</td><td>View Item-Wise Dashboard</td><td>Admin</td><td>Admin reviews orders by item code</td></tr>
+  <tr><td class="id">UC-07</td><td>Set Item Group to Production</td><td>Admin</td><td>Admin schedules items for production</td></tr>
+  <tr><td class="id">UC-08</td><td>Download Production Report</td><td>Admin</td><td>Admin requires batch record for production floor</td></tr>
+  <tr><td class="id">UC-09</td><td>View Completed Orders</td><td>Admin</td><td>Admin reviews fulfilled orders</td></tr>
+  <tr><td class="id">UC-10</td><td>Download Completed Order Report</td><td>Admin</td><td>Admin archives completed order data</td></tr>
+  <tr><td class="id">UC-11</td><td>Delete Completed Order</td><td>Admin</td><td>Admin removes fulfilled order from active view</td></tr>
+</table>
+
+<h2 class="sub">6.3 Revision History</h2>
+<table class="req-table">
+  <tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr>
+  <tr><td>1.0</td><td>June 25, 2026</td><td>Atreya SoftTech Engineering</td><td>Initial draft based on client verbal specification</td></tr>
+</table>
+
+<div style="text-align:center;margin-top:48px;padding-top:20px;border-top:2px solid var(--navy);">
+  <strong style="color:var(--navy);font-size:14px;">END OF DOCUMENT</strong><br>
+  <span style="color:#888;font-size:12px;margin-top:6px;display:block;">Atreya SoftTech Pvt. Ltd. &nbsp;·&nbsp; Mysore, Karnataka, India 570020 &nbsp;·&nbsp; contact@atreyasofttech.in</span>
+</div>
+
+</div><!-- .content -->
+
+<div class="doc-footer">
+  CONFIDENTIAL — Atreya SoftTech Pvt. Ltd. © 2026 — AST-SOMS-SRS-001 — Document ID: AST-SOMS-SRS-001 v1.0
+</div>
+
+</div><!-- .page -->
+</body>
+</html>
