@@ -150,7 +150,7 @@
         <li><a href="#s37">FR-MGMT — Completed Order Management</a></li>
       </ul>
     </li>
-    <li><a href="#s4">Non-Functional Requirements</a></li>
+    <li><a href="#s4">Android Application</a></li>
     <li><a href="#s7">User Interface Requirements</a></li>
     <li><a href="#s9">Appendices</a></li>
   </ol>
@@ -325,50 +325,33 @@
 </table>
 
 <!-- ═══════════════════════════════════════ -->
-<h1 class="section" id="s4">4. Non-Functional Requirements</h1>
+<h1 class="section" id="s4">4. Android Application</h1>
 
-<h2 class="sub">4.1 Performance</h2>
+<h2 class="sub">4.1 Platform Overview</h2>
+<p>The Sales Order Management System (SOMS) is developed as a <strong>native Android application</strong>. It is designed to be installed and run on Android smartphones and tablets, providing an optimised mobile experience for field sales representatives and administrators.</p>
+
+<h2 class="sub">4.2 Target Platform &amp; Compatibility</h2>
 <table class="req-table">
-  <tr><th>NFR ID</th><th>Requirement</th><th>Target</th></tr>
-  <tr><td class="id">NFR-PERF-01</td><td>Page load time — initial navigation</td><td>≤ 2 seconds on 4G</td></tr>
-  <tr><td class="id">NFR-PERF-02</td><td>Order submission API response (95th percentile)</td><td>≤ 500 ms</td></tr>
-  <tr><td class="id">NFR-PERF-03</td><td>Admin dashboard load for up to 1,000 orders</td><td>≤ 3 seconds</td></tr>
-  <tr><td class="id">NFR-PERF-04</td><td>PDF report generation for up to 200 orders</td><td>≤ 5 seconds</td></tr>
-  <tr><td class="id">NFR-PERF-05</td><td>Concurrent authenticated users without degradation</td><td>≥ 50</td></tr>
+  <tr><th>Attribute</th><th>Details</th></tr>
+  <tr><td class="id">Platform</td><td>Android (Native)</td></tr>
+  <tr><td class="id">Minimum SDK</td><td>Android 10 (API Level 29)</td></tr>
+  <tr><td class="id">Target SDK</td><td>Android 14 (API Level 34)</td></tr>
+  <tr><td class="id">Supported Devices</td><td>Smartphones and tablets with screen sizes from 5" and above</td></tr>
+  <tr><td class="id">Distribution</td><td>Direct APK distribution</td></tr>
+  <tr><td class="id">Architecture Support</td><td>ARM64-v8a, armeabi-v7a</td></tr>
 </table>
 
-<h2 class="sub">4.2 Security</h2>
-<table class="req-table">
-  <tr><th>NFR ID</th><th>Requirement</th></tr>
-  <tr><td class="id">NFR-SEC-01</td><td>All communications shall use HTTPS/TLS 1.2 or higher. Plain HTTP connections shall be rejected.</td></tr>
-  <tr><td class="id">NFR-SEC-02</td><td>PINs shall be hashed using <strong>bcrypt</strong> (minimum cost factor 12). PINs shall never be stored or transmitted in plaintext.</td></tr>
-  <tr><td class="id">NFR-SEC-03</td><td>JWTs shall be signed with a server-held secret (HS256 minimum) and expire after 8 hours.</td></tr>
-  <tr><td class="id">NFR-SEC-04</td><td>All user-supplied input shall be sanitised to prevent SQL injection and XSS. Parameterised queries shall be used for all database operations.</td></tr>
-  <tr><td class="id">NFR-SEC-05</td><td>Role-based authorisation checks shall be enforced <strong>server-side</strong> on every API endpoint.</td></tr>
-  <tr><td class="id">NFR-SEC-06</td><td>Account lockout (5 failed attempts → 15-minute lockout) shall be enforced server-side.</td></tr>
-  <tr><td class="id">NFR-SEC-07</td><td>No sensitive data (PINs, tokens, PII) shall appear in server logs, error messages, or URL query parameters.</td></tr>
-  <tr><td class="id">NFR-SEC-08</td><td>Soft-deleted order records shall not be retrievable via the application API.</td></tr>
-</table>
-
-<h2 class="sub">4.3 Usability</h2>
+<h2 class="sub">4.3 Android-Specific Features</h2>
 <ul>
-  <li>Fully functional on screens from 360 px width upward (mobile-first responsive)</li>
-  <li>All interactive elements shall have a minimum tap target of 44 × 44 px (WCAG 2.1)</li>
-  <li>Form validation errors shall appear inline, adjacent to the offending field</li>
-  <li>The order entry form shall be completable in under 60 seconds by a trained Sales User</li>
-  <li>All status labels shall use plain language — no technical codes visible to end users</li>
-  <li>Loading indicators for all async operations taking longer than 300 ms</li>
+  <li>The application shall be built as a native Android app, ensuring full access to device capabilities and a native look-and-feel consistent with Android design guidelines (Material Design).</li>
+  <li>The app shall support offline data caching, allowing Sales Users to view previously loaded orders when network connectivity is temporarily unavailable.</li>
+  <li>Push notifications shall be supported to alert Sales Users and Admins of order status changes.</li>
+  <li>The app shall handle Android lifecycle events (screen rotation, backgrounding, process death) gracefully, preserving form data and user state.</li>
+  <li>The app shall request only the minimum necessary Android permissions required for its functionality (e.g., INTERNET, ACCESS_NETWORK_STATE).</li>
 </ul>
 
-<h2 class="sub">4.4 Reliability &amp; Availability</h2>
-<table class="req-table">
-  <tr><th>NFR ID</th><th>Requirement</th><th>Target</th></tr>
-  <tr><td class="id">NFR-REL-01</td><td>System uptime (excluding planned maintenance)</td><td>≥ 99.5% monthly</td></tr>
-  <tr><td class="id">NFR-REL-02</td><td>Planned maintenance windows</td><td>Off-peak hours, 24h advance notice</td></tr>
-  <tr><td class="id">NFR-REL-03</td><td>Data backup frequency</td><td>Daily automated, retained 30 days</td></tr>
-  <tr><td class="id">NFR-REL-04</td><td>Recovery Point Objective (RPO)</td><td>≤ 24 hours</td></tr>
-  <tr><td class="id">NFR-REL-05</td><td>Recovery Time Objective (RTO)</td><td>≤ 4 hours</td></tr>
-</table>
+<h2 class="sub">4.4 Installation &amp; Deployment</h2>
+<p>The SOMS Android application shall be distributed as a <strong>direct APK</strong> provided to users for installation. Updates shall be managed through the distribution of updated APK files. The minimum storage space required for installation shall not exceed <strong>50 MB</strong>.</p>
 
 <!-- ═══════════════════════════════════════ -->
 <h1 class="section" id="s7">5. User Interface Requirements</h1>
